@@ -10,10 +10,11 @@ License: GPL3
 */
 
 
-add_action('admin_menu',     'MGVmediaStaticly::create_menu');
-add_action('save_post',      'MGVmediaStaticly::clean');
-add_action('comment_post',   'MGVmediaStaticly::clean');
-add_action('plugins_loaded', 'MGVmediaStaticly::perform');
+add_action('admin_menu',       'MGVmediaStaticly::create_menu');
+add_action('save_post',        'MGVmediaStaticly::clean');
+add_action('comment_post',     'MGVmediaStaticly::clean');
+add_action('clean_post_cache', 'MGVmediaStaticly::clean');
+add_action('plugins_loaded',   'MGVmediaStaticly::perform');
 
 class MGVmediaStaticly {
     function create_menu() {
@@ -22,7 +23,7 @@ class MGVmediaStaticly {
 
     function settingPage() {
         if (isset($_POST['remove_static_files'])) {
-            self::clean('..');
+            self::clean();
         }
         echo '
             <div id="postbox-container-1" class="postbox-container">
@@ -58,13 +59,18 @@ class MGVmediaStaticly {
 
     }
 
-    function clean($root = false) {
-        if (!$root) $root = $_SERVER['DOCUMENT_ROOT'];
-        exec('find '.$root.'/ -type f -name index.html | xargs rm');
-        exec('find '.$root.'/ -type d -empty | xargs rmdir');
+    function clean() {
+        $root = $_SERVER['DOCUMENT_ROOT'];
+        while (!is_file($root.'/wp-config.php')) $root .= '/..';
+
+        $root .= '/static/';
+        if (is_dir($root))
+        exec('rm -rf '.escapeshellarg($root));
     }
 
     function perform() {
+        if (is_preview()) return;
+
         $request_uri = $_SERVER['REQUEST_URI'];
         if (substr($request_uri, strlen($request_uri) -1) == '/'
         && $_SERVER['SCRIPT_NAME'] == '/index.php'
@@ -86,7 +92,7 @@ class MGVmediaStaticly {
 
 
             $content = file_get_contents($_SERVER['SCRIPT_URI']);
-            $root = $_SERVER['DOCUMENT_ROOT'];
+            $root = $_SERVER['DOCUMENT_ROOT'].'/static/';
             if (!is_dir($root.$request_uri)) mkdir($root.$request_uri, 0755, true);
             file_put_contents($root.$request_uri.'index.html', $content);
             echo $content;
