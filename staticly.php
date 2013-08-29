@@ -10,11 +10,15 @@ License: GPL3
 */
 
 
-add_action('admin_menu',       'MGVmediaStaticly::create_menu');
-add_action('save_post',        'MGVmediaStaticly::clean');
-add_action('comment_post',     'MGVmediaStaticly::clean');
-add_action('clean_post_cache', 'MGVmediaStaticly::clean');
-add_action('plugins_loaded',   'MGVmediaStaticly::perform');
+add_action('admin_menu',              'MGVmediaStaticly::create_menu');
+add_action('save_post',               'MGVmediaStaticly::clean');
+add_action('comment_post',            'MGVmediaStaticly::clean');
+add_action('clean_attachment_cache',  'MGVmediaStaticly::clean');
+add_action('clean_object_term_cache', 'MGVmediaStaticly::clean');
+add_action('clean_page_cache',        'MGVmediaStaticly::clean');
+add_action('clean_term_cache',        'MGVmediaStaticly::clean');
+add_action('clean_post_cache',        'MGVmediaStaticly::clean');
+add_action('plugins_loaded',          'MGVmediaStaticly::perform');
 
 class MGVmediaStaticly {
     function create_menu() {
