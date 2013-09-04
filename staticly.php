@@ -12,7 +12,7 @@ License: GPL3
 
 add_action('admin_menu',              'MGVmediaStaticly::create_menu');
 add_action('save_post',               'MGVmediaStaticly::clean_save_post');
-add_action('comment_post',            'MGVmediaStaticly::clean_comment_post');
+add_action('comment_post',            'MGVmediaStaticly::check_comment_post');
 add_action('clean_attachment_cache',  'MGVmediaStaticly::clean_clean_attachment_cache');
 add_action('clean_object_term_cache', 'MGVmediaStaticly::clean_clean_object_term_cache');
 add_action('clean_page_cache',        'MGVmediaStaticly::clean_clean_page_cache');
@@ -20,7 +20,19 @@ add_action('clean_term_cache',        'MGVmediaStaticly::clean_clean_term_cache'
 add_action('clean_post_cache',        'MGVmediaStaticly::clean_clean_post_cache');
 add_action('plugins_loaded',          'MGVmediaStaticly::perform');
 
+add_action('transition_comment_status', 'MGVmediaStaticly::check_comment_status');
+
 class MGVmediaStaticly {
+    public static function check_comment_status($new_status, $old_status, $comment) {
+        $show = array('deleted', 'approved', 'unapproved', 'spam');
+        if (!(in_array($old_status, $show) xor !in_array($new_status, $show))) {
+            self::clean_comment_status();
+        }
+    }
+    public static function check_comment_post($commentId, $status) {
+	if ($status !== 'spam') self::clean_comment_post();
+    }
+
     function log($hook) {
         $content .= "\n...............................\n";
         $content .= date('Y-m-d H:i:s').' '.$hook."\n";
