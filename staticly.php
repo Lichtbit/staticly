@@ -11,16 +11,37 @@ License: GPL3
 
 
 add_action('admin_menu',              'MGVmediaStaticly::create_menu');
-add_action('save_post',               'MGVmediaStaticly::clean');
-add_action('comment_post',            'MGVmediaStaticly::clean');
-add_action('clean_attachment_cache',  'MGVmediaStaticly::clean');
-add_action('clean_object_term_cache', 'MGVmediaStaticly::clean');
-add_action('clean_page_cache',        'MGVmediaStaticly::clean');
-add_action('clean_term_cache',        'MGVmediaStaticly::clean');
-add_action('clean_post_cache',        'MGVmediaStaticly::clean');
+add_action('save_post',               'MGVmediaStaticly::clean_save_post');
+add_action('comment_post',            'MGVmediaStaticly::clean_comment_post');
+add_action('clean_attachment_cache',  'MGVmediaStaticly::clean_clean_attachment_cache');
+add_action('clean_object_term_cache', 'MGVmediaStaticly::clean_clean_object_term_cache');
+add_action('clean_page_cache',        'MGVmediaStaticly::clean_clean_page_cache');
+add_action('clean_term_cache',        'MGVmediaStaticly::clean_clean_term_cache');
+add_action('clean_post_cache',        'MGVmediaStaticly::clean_clean_post_cache');
 add_action('plugins_loaded',          'MGVmediaStaticly::perform');
 
 class MGVmediaStaticly {
+    function log($hook) {
+        $content .= "\n...............................\n";
+        $content .= date('Y-m-d H:i:s').' '.$hook."\n";
+        $content .= 'POST '.print_r($_POST, true);
+        $content .= 'GET '.print_r($_GET, true);
+        $content .= 'SERVER '.print_r($_SERVER, true);
+        $content .= "DEBUG \n";
+        foreach (debug_backtrace() as $line) {
+            $content .= sprintf("%100s:%-6d %-30s %s", $line['file'], $line['line'], $line['function'], implode(', ', $line['args']))."\n";
+        }
+        $content .= "\n...............................\n";
+        
+        file_put_contents(__DIR__.'/debug.log', $content, FILE_APPEND);
+    }
+    
+    public static function __callStatic($name, $arguments) {
+        if (substr($name, 0, 6) != 'clean_') return;
+        self::log(substr($name, 6));
+        self::clean();
+    }
+
     function create_menu() {
         add_submenu_page('options-general.php', 'Staticly', 'Staticly', 7, "staticly", "MGVmediaStaticly::settingPage");
     }
