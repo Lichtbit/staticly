@@ -49,12 +49,10 @@ class MGVmediaStaticly {
             foreach ($line['args'] as $arg) {
                 if (is_array($arg)) {
                     $arguments[] = json_encode($arg);
+                } elseif (is_object($arg)) {
+                    $arguments[] = get_class($arg);
                 } else {
-                    try {
-                        $arguments[] = substr(trim($arg), 0, 30);
-                    } catch (Exception $e) {
-                        $arguments[] = get_class($arg);
-                    }
+                    $arguments[] = substr(trim($arg), 0, 30);
                 }
             }
             $content .= sprintf("%100s:%-6d %-30s %s", $line['file'], $line['line'], $line['function'], implode(',', $arguments))."\n";
