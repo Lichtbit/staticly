@@ -13,8 +13,12 @@
 Use it with following htaccess entry:
 
 ```
-
 RewriteEngine On
+
+RewriteCond %{REQUEST_URI} ^/$
+RewriteCond %{QUERY_STRING} ^(s=.*)$
+RewriteRule ^/? index.php?%1 [R=302,L]
+
 RewriteCond %{DOCUMENT_ROOT}/static/$0/index.html -f
 RewriteRule ^(.*)$ static/$1/index.html [L]
 
