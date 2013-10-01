@@ -62,6 +62,13 @@ class MGVmediaStaticly {
         file_put_contents(__DIR__.'/debug.log', $content, FILE_APPEND);
     }
 
+    public static function clean_save_post($post_id) {
+
+	$post_status = get_post_status($post_id);
+	if ($post_status == 'auto-draft' && $post_status == "inherit") return;
+	else self::clean_save_post($post_id);
+    }
+
     public static function __callStatic($name, $arguments) {
         if (substr($name, 0, 6) != 'clean_') return;
         self::log(substr($name, 6));
