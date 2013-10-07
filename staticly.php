@@ -66,7 +66,7 @@ class MGVmediaStaticly {
 
 	$post_status = get_post_status($post_id);
 	if ($post_status == 'auto-draft' && $post_status == "inherit") return;
-	else self::clean_save_post($post_id);
+	else self::clean_other_save_post($post_id);
     }
 
     public static function __callStatic($name, $arguments) {
