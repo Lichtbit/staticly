@@ -3,7 +3,7 @@
 Plugin Name: Staticly
 Plugin URI: http://www.mgvmedia.com/
 Description: Generates static html files while normal loading.
-Version: 1.0
+Version: 1.1
 Author: georf
 Author URI: http://www.mgvmedia.com
 License: GPL3
@@ -133,29 +133,18 @@ class MGVmediaStaticly {
         if (substr($request_uri, strlen($request_uri) -1) == '/'
         && $_SERVER['SCRIPT_NAME'] == '/index.php'
         && $_SERVER['REMOTE_ADDR'] != '127.0.0.1'
-        && $_SERVER['SERVER_ADDR'] != $_SERVER['REMOTE_ADDR']) {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $_SERVER['SCRIPT_URI']);
-            curl_setopt($ch, CURLOPT_FAILONERROR, false);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-
-            $content = curl_exec($ch);
-
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-
-            if ($httpCode != 200) return;
-
-
-            $content = file_get_contents($_SERVER['SCRIPT_URI']);
-            $root = $_SERVER['DOCUMENT_ROOT'].'/static/';
-            if (!is_dir($root.$request_uri)) mkdir($root.$request_uri, 0755, true);
-            file_put_contents($root.$request_uri.'index.html', $content);
-            echo $content;
-            exit();
+        && $_SERVER['SERVER_ADDR'] != $_SERVER['REMOTE_ADDR']
+        && !is_user_logged_in()) {
+            ob_start('MGVmediaStaticly::save');
         }
+    }
+
+    function save($content) {
+        $root = $_SERVER['DOCUMENT_ROOT'].'/static/';
+        $request_uri = $_SERVER['REQUEST_URI'];
+        if (!is_dir($root.$request_uri)) mkdir($root.$request_uri, 0755, true);
+        file_put_contents($root.$request_uri.'index.html', $content);
+        return $content;
     }
 }
 
