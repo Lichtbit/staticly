@@ -11,11 +11,6 @@ License: GPL3
 
 
 add_action('admin_menu',                 'MGVmediaStaticly::create_menu');
-// add_action('clean_attachment_cache',     'MGVmediaStaticly::clean_clean_attachment_cache');
-// add_action('clean_object_term_cache',    'MGVmediaStaticly::clean_clean_object_term_cache');
-// add_action('clean_page_cache',           'MGVmediaStaticly::clean_clean_page_cache');
-// add_action('clean_post_cache',           'MGVmediaStaticly::clean_clean_post_cache');
-// add_action('clean_term_cache',           'MGVmediaStaticly::clean_clean_term_cache');
 add_action('comment_post',               'MGVmediaStaticly::check_comment_post', 10, 2);
 add_action('plugins_loaded',             'MGVmediaStaticly::perform');
 add_action('save_post',                  'MGVmediaStaticly::clean_save_post');
@@ -37,30 +32,6 @@ class MGVmediaStaticly {
         }
     }
 
-    private static function log($hook) {
-        $content .= "\n...............................\n";
-        $content .= date('Y-m-d H:i:s').' '.$hook."\n";
-        $content .= 'POST '.print_r($_POST, true);
-        $content .= 'GET '.print_r($_GET, true);
-        $content .= 'SERVER '.print_r($_SERVER, true);
-        $content .= "DEBUG \n";
-        foreach (debug_backtrace() as $line) {
-            $arguments = array();
-            foreach ($line['args'] as $arg) {
-                if (is_array($arg)) {
-                    $arguments[] = json_encode($arg);
-                } elseif (is_object($arg)) {
-                    $arguments[] = get_class($arg);
-                } else {
-                    $arguments[] = substr(trim($arg), 0, 30);
-                }
-            }
-            $content .= sprintf("%100s:%-6d %-30s %s", $line['file'], $line['line'], $line['function'], implode(',', $arguments))."\n";
-        }
-        $content .= "\n...............................\n";
-
-        file_put_contents(__DIR__.'/debug.log', $content, FILE_APPEND);
-    }
 
     public static function clean_save_post($post_id) {
 
@@ -71,7 +42,6 @@ class MGVmediaStaticly {
 
     public static function __callStatic($name, $arguments) {
         if (substr($name, 0, 6) != 'clean_') return;
-        self::log(substr($name, 6));
         self::clean();
     }
 
