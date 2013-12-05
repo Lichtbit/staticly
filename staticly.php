@@ -113,7 +113,9 @@ class MGVmediaStaticly {
         $root = $_SERVER['DOCUMENT_ROOT'].'/static/';
         $request_uri = $_SERVER['REQUEST_URI'];
         if (!is_dir($root.$request_uri)) mkdir($root.$request_uri, 0755, true);
-        file_put_contents($root.$request_uri.'index.html', $content);
+	$filepath = $root.$request_uri.'index.html';
+        file_put_contents($filepath, $content);
+	if (filesize($filepath) == 0) unlink($filepath);
         return $content;
     }
 }
