@@ -3,7 +3,7 @@
 Plugin Name: Staticly
 Plugin URI: http://www.mgvmedia.com/
 Description: Generates static html files while normal loading.
-Version: 1.1
+Version: 1.2
 Author: georf
 Author URI: http://www.mgvmedia.com
 License: GPL3
@@ -97,7 +97,7 @@ class MGVmediaStaticly {
   }
 
   public static function perform() {
-    if (is_preview()) return;
+    if (is_preview() || is_404()) return;
 
     $request_uri = $_SERVER['REQUEST_URI'];
     if (substr($request_uri, strlen($request_uri) -1) == '/'
