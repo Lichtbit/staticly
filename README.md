@@ -19,6 +19,7 @@ RewriteCond %{REQUEST_URI} ^/$
 RewriteCond %{QUERY_STRING} ^(s=.*)$
 RewriteRule ^/? index.php?%1 [R=302,L]
 
+RewriteCond %{REQUEST_METHOD} GET
 RewriteCond %{DOCUMENT_ROOT}/static/$0/index.html -f
 RewriteRule ^(.*)$ static/$1/index.html [L]
 
