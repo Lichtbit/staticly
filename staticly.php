@@ -97,7 +97,7 @@ class MGVmediaStaticly {
   }
 
   public static function perform() {
-    if (is_preview() || is_404()) return;
+    if (is_preview() || is_404() || $_SERVER['REQUEST_METHOD'] === 'POST') return;
 
     $request_uri = $_SERVER['REQUEST_URI'];
     if (substr($request_uri, strlen($request_uri) -1) == '/'
